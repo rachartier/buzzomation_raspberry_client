@@ -7,7 +7,7 @@ import uuid
 import streamlit as st
 
 # Add src directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 from src.buzzer_monitor import BuzzerMonitor
 from src.game_api import GameAPI

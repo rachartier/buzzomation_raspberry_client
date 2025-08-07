@@ -1,0 +1,4 @@
+requests==2.32.4
+python-socketio==5.13.0
+# Only needed on real Raspberry Pi hardware:
+RPi.GPIO==0.7.1

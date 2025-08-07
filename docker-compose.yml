@@ -1,18 +1,41 @@
 services:
-  buzzer-client:
+  gui:
     build:
       context: .
-      dockerfile: Dockerfile
-      platforms:
-        - linux/arm64/v8
-    container_name: buzzomation-rasp-client
+      dockerfile: Dockerfile.gui
+    container_name: buzzer-gui
     restart: unless-stopped
     ports:
       - "8501:8501"
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
-      - ./player_config.json:/app/player_config.json
+      - ./gui/player_config.json:/app/player_config.json
+      - /dev/gpiomem:/dev/gpiomem:rw
+      - /sys/class/gpio:/sys/class/gpio:rw
+    devices:
+      - /dev/gpiomem:/dev/gpiomem
+    privileged: false
+    group_add:
+      - "997"
+    networks:
+      - buzzer-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    container_name: buzzer-cli
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./gui/player_config.json:/app/player_config.json
       - /dev/gpiomem:/dev/gpiomem:rw
       - /sys/class/gpio:/sys/class/gpio:rw
     devices:

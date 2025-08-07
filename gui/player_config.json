@@ -1,0 +1,12 @@
+{
+  "7df0d954": {
+    "name": "test1",
+    "gpio_pin": 2,
+    "enabled": true
+  },
+  "12885d26": {
+    "name": "test2",
+    "gpio_pin": 3,
+    "enabled": true
+  }
+}
