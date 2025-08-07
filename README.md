@@ -25,7 +25,7 @@ sudo reboot
 
 2. **Clone and deploy**:
 ```bash
-git clone <repository-url>
+git clone https://github.com/rachartier/buzzomation_raspberry_client
 cd raspberry_client
 docker compose up -d
 ```
