@@ -1,18 +1,13 @@
 # pyright: basic
 
-import os
-import sys
 import uuid
 
 import streamlit as st
 
-# Add src directory to path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-from src.buzzer_monitor import BuzzerMonitor
-from src.game_api import GameAPI
-from src.gpio_handler import gpio_handler
-from src.player_manager import PlayerManager
+from raspberry_buzzer.src.buzzer_monitor import BuzzerMonitor
+from raspberry_buzzer.src.game_api import GameAPI
+from raspberry_buzzer.src.gpio_handler import gpio_handler
+from raspberry_buzzer.src.player_manager import PlayerManager
 
 # Page configuration
 st.set_page_config(page_title="Buzzer Configuration")
@@ -478,3 +473,12 @@ if len(players) > 0:
             st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
+
+
+def main():
+    """Entry point for the GUI application"""
+    pass  # Streamlit app runs automatically when the module is executed
+
+
+if __name__ == "__main__":
+    main()

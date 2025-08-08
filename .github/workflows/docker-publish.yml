@@ -4,39 +4,72 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: docker.io
+  CLI_IMAGE_NAME: rachartier/buzzomation-config-raspberry-cli
+  GUI_IMAGE_NAME: rachartier/buzzomation-config-raspberry-gui
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
+    
+    strategy:
+      matrix:
+        image: [cli, gui]
+        
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v3
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v1
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v3
       with:
+        registry: ${{ env.REGISTRY }}
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Build and push GUI image
-      uses: docker/build-push-action@v2
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
       with:
-        context: ./
-        file: ./Dockerfile.gui
-        push: true
-        tags: rachartier/buzzomation-config-raspberry-gui
-        platforms: linux/arm64
+        images: |
+          ${{ matrix.image == 'cli' && env.CLI_IMAGE_NAME || env.GUI_IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=raw,value=latest,enable={{is_default_branch}}
 
-    - name: Build and push CLI image
-      uses: docker/build-push-action@v2
+    - name: Set platform targets
+      id: platforms
+      run: |
+        if [ "${{ matrix.image }}" = "cli" ]; then
+          echo "platforms=linux/arm64,linux/arm/v7" >> $GITHUB_OUTPUT
+        else
+          echo "platforms=linux/arm64" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
       with:
-        context: ./
-        file: ./Dockerfile.cli
-        push: true
-        tags: rachartier/buzzomation-config-raspberry-cli
-        platforms: linux/arm64, linux/arm/v7
+        context: .
+        file: ./Dockerfile.${{ matrix.image }}
+        platforms: ${{ steps.platforms.outputs.platforms }}
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 

@@ -8,10 +8,11 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY cli/requirements.txt ./requirements.txt
-COPY src ./src
-COPY cli/cli.py ./cli.py
+# Copy the entire package structure
+COPY raspberry_buzzer ./raspberry_buzzer
+COPY pyproject.toml ./
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install the package with CLI-specific dependencies only
+RUN pip install --no-cache-dir -e .[cli]
 
-CMD ["python", "cli.py"]
+CMD ["python", "-m", "raspberry_buzzer.cli"]

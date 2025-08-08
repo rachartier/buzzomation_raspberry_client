@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "raspberry-buzzer"
+version = "1.0.0"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "requests==2.32.4",
+    "python-socketio==5.13.0",
+    "RPi.GPIO==0.7.1; platform_machine=='armv7l' or platform_machine=='aarch64'"
+]
+
+[project.optional-dependencies]
+cli = [
+    "rich==13.7.1"
+]
+gui = [
+    "streamlit==1.48.0",
+    "pandas==2.3.1",
+    "altair==5.5.0"
+]
+all = [
+    "rich==13.7.1",
+    "streamlit==1.48.0",
+    "pandas==2.3.1",
+    "altair==5.5.0"
+]

@@ -8,13 +8,11 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY gui/requirements.txt ./requirements.txt
-COPY src ./src
-COPY gui/app.py ./app.py
-COPY gui/player_config.json ./player_config.json
+COPY raspberry_buzzer ./raspberry_buzzer
+COPY pyproject.toml ./
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -e .[gui]
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "raspberry_buzzer/gui/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
